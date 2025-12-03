@@ -2,25 +2,28 @@ const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
 document.body.prepend(canvas);
 
+// Atur posisi canvas di belakang konten
 canvas.style.position = "fixed";
 canvas.style.top = 0;
 canvas.style.left = 0;
-canvas.style.width = "100%";
-canvas.style.height = "100%";
 canvas.style.zIndex = "-1";
-canvas.style.background = "black";
+canvas.style.pointerEvents = "none"; // agar tidak mengganggu klik
 
+// Atur ukuran canvas mengikuti ukuran layar
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%";
 const fontSize = 16;
-const columns = canvas.width / fontSize;
-const drops = Array(Math.floor(columns)).fill(1);
+let columns = Math.floor(canvas.width / fontSize);
+let drops = Array(columns).fill(1);
 
 function draw() {
+  // Efek fade (latar menumpuk perlahan)
   ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Warna teks hijau neon
   ctx.fillStyle = "#0F0";
   ctx.font = fontSize + "px monospace";
 
@@ -28,16 +31,23 @@ function draw() {
     const text = letters.charAt(Math.floor(Math.random() * letters.length));
     ctx.fillText(text, i * fontSize, drops[i] * fontSize);
 
+    // Reset tetesan
     if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
       drops[i] = 0;
     }
+
     drops[i]++;
   }
 }
 
+// Jalankan animasi setiap 33ms (~30fps)
 setInterval(draw, 33);
 
+// Responsif saat layar diresize
 window.addEventListener("resize", () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
+
+  columns = Math.floor(canvas.width / fontSize);
+  drops = Array(columns).fill(1);
 });
